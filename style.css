@@ -1,0 +1,246 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.terminal-container {
+    width: 100%;
+    max-width: 900px;
+    background-color: #0a0e27;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.terminal-header {
+    background: linear-gradient(to bottom, #2d3142 0%, #1f2233 100%);
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #00ff41;
+}
+
+.terminal-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.btn.close {
+    background-color: #ff5f56;
+}
+
+.btn.minimize {
+    background-color: #ffbd2e;
+}
+
+.btn.maximize {
+    background-color: #27c93f;
+}
+
+.terminal-title {
+    flex: 1;
+    text-align: center;
+    color: #00ff41;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.terminal-body {
+    padding: 20px;
+    background-color: #0a0e27;
+    min-height: 500px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+#terminal-output {
+    color: #00ff41;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.ascii-art {
+    color: #00ff41;
+    font-size: 10px;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    white-space: pre;
+    text-shadow: 0 0 5px #00ff41;
+}
+
+.welcome-message p {
+    margin: 5px 0;
+}
+
+.command-output {
+    margin: 10px 0;
+    padding-left: 0;
+}
+
+.command-line {
+    margin: 5px 0;
+}
+
+.command-line .prompt-text {
+    color: #00ff41;
+}
+
+.command-line .command-text {
+    color: #ffffff;
+}
+
+.error {
+    color: #ff6b6b;
+}
+
+.success {
+    color: #51cf66;
+}
+
+.info {
+    color: #4dabf7;
+}
+
+.input-line {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.prompt {
+    color: #00ff41;
+    margin-right: 10px;
+    white-space: nowrap;
+    text-shadow: 0 0 5px #00ff41;
+}
+
+#terminal-input {
+    flex: 1;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+    caret-color: #00ff41;
+}
+
+#terminal-input::selection {
+    background-color: #00ff41;
+    color: #0a0e27;
+}
+
+.terminal-body::-webkit-scrollbar {
+    width: 10px;
+}
+
+.terminal-body::-webkit-scrollbar-track {
+    background: #0a0e27;
+}
+
+.terminal-body::-webkit-scrollbar-thumb {
+    background: #00ff41;
+    border-radius: 5px;
+}
+
+.terminal-body::-webkit-scrollbar-thumb:hover {
+    background: #00cc33;
+}
+
+.subject-list {
+    margin: 10px 0;
+}
+
+.subject-item {
+    padding: 5px 0;
+    padding-left: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.subject-item:hover {
+    color: #ffffff;
+    text-shadow: 0 0 10px #00ff41;
+}
+
+.pyq-item {
+    margin: 5px 0 5px 40px;
+    color: #4dabf7;
+}
+
+.blink {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 49% {
+        opacity: 1;
+    }
+    50%, 100% {
+        opacity: 0;
+    }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+
+table td {
+    padding: 5px 10px;
+}
+
+table td:first-child {
+    color: #4dabf7;
+    width: 30%;
+}
+
+@media (max-width: 768px) {
+    .terminal-container {
+        max-width: 100%;
+    }
+    
+    .ascii-art {
+        font-size: 6px;
+    }
+    
+    .terminal-body {
+        padding: 15px;
+        max-height: 60vh;
+    }
+    
+    #terminal-input {
+        font-size: 14px;
+    }
+}
