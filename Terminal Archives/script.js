@@ -17,9 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Core Functions ---
 
     // Function to add a line to the terminal
-    function addLine(text, className = '') {
+    // Note: Only use this with trusted content. For user input, sanitize first.
+    function addLine(text, className = '', isHTML = true) {
         const line = document.createElement('div');
-        line.innerHTML = text; // Use innerHTML to render HTML tags like <span>
+        if (isHTML) {
+            line.innerHTML = text; // Only for trusted HTML content
+        } else {
+            line.textContent = text; // Safer for untrusted content
+        }
         if (className) {
             line.className = `line ${className}`;
         } else {
@@ -27,6 +32,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         output.appendChild(line);
         window.scrollTo(0, document.body.scrollHeight);
+    }
+    
+    // Function to sanitize user input to prevent XSS
+    function sanitizeHTML(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
     }
 
     // Function to simulate a delay
@@ -90,7 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function performSearch(query) {
         if (!query) return;
 
-        addLine(`<span class="prompt">user@archives:~$</span> <span class="command">search --query="${query}"</span>`);
+        // Sanitize user input to prevent XSS
+        const sanitizedQuery = sanitizeHTML(query);
+        addLine(`<span class="prompt">user@archives:~$</span> <span class="command">search --query="${sanitizedQuery}"</span>`);
 
         showProgressBar('Searching database...', 1500).then(() => {
             const lowerQuery = query.toLowerCase();
@@ -103,7 +117,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (results.length > 0) {
                 addLine(`Found <span class="highlight">${results.length}</span> result(s):`);
                 results.forEach(paper => {
-                    addLine(`  <div class="search-result">[${paper.year}] <a href="${paper.url}" target="_blank">${paper.title}</a></div>`);
+                    // Sanitize paper data to prevent XSS
+                    const sanitizedTitle = sanitizeHTML(paper.title);
+                    const sanitizedUrl = sanitizeHTML(paper.url);
+                    addLine(`  <div class="search-result">[${paper.year}] <a href="${sanitizedUrl}" target="_blank" rel="noopener noreferrer">${sanitizedTitle}</a></div>`);
                 });
             } else {
                 addLine('No results found for your query.');
