@@ -90,10 +90,10 @@
    ```
 
 2. **Open the application:**
-   - Simply open `Terminal Archives/index.html` in your web browser
+   - Simply open `terminal-archives/index.html` in your web browser
    - Or use a local server:
      ```bash
-     cd "Terminal Archives"
+     cd terminal-archives
      python -m http.server 8080
      ```
      Then visit `http://localhost:8080`
@@ -174,7 +174,7 @@ This project implements several security best practices:
 ```
 Terminal-Archives-PYQs-/
 ├── index.html (root redirect)
-├── Terminal Archives/
+├── terminal-archives/
 │   ├── index.html        # Main application
 │   ├── style.css         # Styling and themes
 │   └── script.js         # Application logic
