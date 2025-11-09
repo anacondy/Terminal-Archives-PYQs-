@@ -72,7 +72,20 @@
 
 ## 🖼️ Screenshots
 
-*The application features an authentic terminal interface with green text on a dark background, progress bars during loading, and a sleek search modal activated with Ctrl+K.*
+### Main Terminal Interface
+The application features an authentic terminal interface with green text on a dark background, displaying device information and system status.
+
+![Terminal Archives Main Interface](https://github.com/user-attachments/assets/16d710b2-eefa-48f2-9626-d88a86c7092d)
+
+### Search Modal (Ctrl+K)
+Quick search functionality activated with Ctrl+K keyboard shortcut for instant access to the PYQ database.
+
+![Search Modal](https://github.com/user-attachments/assets/2fb54ba5-fab9-46b8-9291-85a5614120a3)
+
+### Search Results
+Real-time search results displaying relevant papers with year and subject information.
+
+![Search Results](https://github.com/user-attachments/assets/34e1e3df-28b9-4a39-b785-7e289e0b6960)
 
 ## 🚀 Getting Started
 
