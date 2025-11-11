@@ -14,6 +14,183 @@ document.addEventListener('DOMContentLoaded', () => {
         { subject: 'Computer Application', year: 2023, title: 'B.Sc. Comp App Paper II - Data Structures', url: '#' },
     ];
 
+    // --- Device Detection & Stats System ---
+    
+    // Robust device detection
+    function detectDevice() {
+        const ua = navigator.userAgent;
+        const platform = navigator.platform;
+        const maxTouchPoints = navigator.maxTouchPoints || 0;
+        
+        // Detect device type with emoji
+        let deviceType = '👽'; // Default: other
+        let deviceName = 'Unknown';
+        let isMobile = false;
+        
+        // Check for mobile devices
+        const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+        isMobile = mobileRegex.test(ua) || maxTouchPoints > 0;
+        
+        // Detailed device detection
+        if (/iPhone/.test(ua)) {
+            deviceType = '🍎';
+            deviceName = 'iPhone';
+            isMobile = true;
+        } else if (/iPad|iPod/.test(ua)) {
+            deviceType = '🍏';
+            deviceName = ua.includes('iPad') ? 'iPad' : 'iPod';
+            isMobile = true;
+        } else if (/Macintosh/.test(ua) && maxTouchPoints > 1) {
+            deviceType = '🍏';
+            deviceName = 'iPad (Safari Desktop Mode)';
+            isMobile = true;
+        } else if (/Mac/.test(platform)) {
+            deviceType = '🍏';
+            deviceName = 'Mac';
+            isMobile = false;
+        } else if (/Android/.test(ua)) {
+            deviceType = '🐶';
+            deviceName = 'Android';
+            isMobile = true;
+        } else if (/Windows/.test(ua) || /Win/.test(platform)) {
+            deviceType = '🪟';
+            deviceName = 'Windows';
+            isMobile = false;
+        } else if (/Linux/.test(ua) || /Linux/.test(platform)) {
+            deviceType = '🐧';
+            deviceName = 'Linux';
+            isMobile = false;
+        } else if (/CrOS/.test(ua)) {
+            deviceType = '🤖';
+            deviceName = 'ChromeOS';
+            isMobile = false;
+        }
+        
+        return { deviceType, deviceName, isMobile, userAgent: ua };
+    }
+    
+    // Stats tracking system
+    function initStats() {
+        const device = detectDevice();
+        const today = new Date().toDateString();
+        
+        // Get or initialize stats
+        let stats = JSON.parse(localStorage.getItem('terminalStats') || '{}');
+        
+        // Initialize structure if needed
+        if (!stats.visits) stats.visits = {};
+        if (!stats.devices) stats.devices = {};
+        if (!stats.firstVisit) stats.firstVisit = today;
+        
+        // Track today's visit
+        if (!stats.visits[today]) {
+            stats.visits[today] = 0;
+        }
+        stats.visits[today]++;
+        
+        // Track device
+        const deviceKey = `${device.deviceType} ${device.deviceName}`;
+        if (!stats.devices[deviceKey]) {
+            stats.devices[deviceKey] = 0;
+        }
+        stats.devices[deviceKey]++;
+        
+        // Store last visit info
+        stats.lastVisit = today;
+        stats.lastDevice = deviceKey;
+        
+        // Save to localStorage
+        localStorage.setItem('terminalStats', JSON.stringify(stats));
+        
+        return { stats, device };
+    }
+    
+    // Calculate stats for display
+    function calculateStats() {
+        const stats = JSON.parse(localStorage.getItem('terminalStats') || '{}');
+        const today = new Date().toDateString();
+        const yesterday = new Date(Date.now() - 86400000).toDateString();
+        
+        const todayVisits = stats.visits?.[today] || 0;
+        const yesterdayVisits = stats.visits?.[yesterday] || 0;
+        
+        // Calculate this month's visits
+        const now = new Date();
+        const thisMonth = `${now.getFullYear()}-${now.getMonth()}`;
+        let monthVisits = 0;
+        
+        for (const date in stats.visits) {
+            const visitDate = new Date(date);
+            const visitMonth = `${visitDate.getFullYear()}-${visitDate.getMonth()}`;
+            if (visitMonth === thisMonth) {
+                monthVisits += stats.visits[date];
+            }
+        }
+        
+        return {
+            todayVisits,
+            yesterdayVisits,
+            monthVisits,
+            devices: stats.devices || {},
+            firstVisit: stats.firstVisit,
+            totalDays: Object.keys(stats.visits || {}).length
+        };
+    }
+    
+    // Show stats page
+    function showStats() {
+        const statsData = calculateStats();
+        const device = detectDevice();
+        
+        // Create stats modal
+        let statsModal = document.getElementById('stats-modal');
+        if (!statsModal) {
+            statsModal = document.createElement('div');
+            statsModal.id = 'stats-modal';
+            statsModal.className = 'stats-modal';
+            document.body.appendChild(statsModal);
+        }
+        
+        statsModal.innerHTML = `
+            <div class="stats-content">
+                <h2>📊 Terminal Archives Statistics</h2>
+                <div class="stats-section">
+                    <h3>📅 Visit Statistics</h3>
+                    <p>Today: <span class="highlight">${statsData.todayVisits}</span> visits</p>
+                    <p>Yesterday: <span class="highlight">${statsData.yesterdayVisits}</span> visits</p>
+                    <p>This Month: <span class="highlight">${statsData.monthVisits}</span> visits</p>
+                    <p>First Visit: <span class="highlight">${statsData.firstVisit}</span></p>
+                    <p>Total Days: <span class="highlight">${statsData.totalDays}</span> days</p>
+                </div>
+                <div class="stats-section">
+                    <h3>🖥️ Device Breakdown</h3>
+                    ${Object.entries(statsData.devices).map(([device, count]) => 
+                        `<p>${device}: <span class="highlight">${count}</span> visits</p>`
+                    ).join('')}
+                </div>
+                <div class="stats-section">
+                    <h3>💻 Current Session</h3>
+                    <p>Device: <span class="highlight">${device.deviceType} ${device.deviceName}</span></p>
+                    <p>Mobile: <span class="highlight">${device.isMobile ? 'Yes' : 'No'}</span></p>
+                </div>
+                <p class="stats-close-hint">Press Escape or F+S again to close</p>
+            </div>
+        `;
+        
+        statsModal.classList.remove('hidden');
+    }
+    
+    // Hide stats page
+    function hideStats() {
+        const statsModal = document.getElementById('stats-modal');
+        if (statsModal) {
+            statsModal.classList.add('hidden');
+        }
+    }
+    
+    // Initialize stats on page load
+    const { stats, device } = initStats();
+
     // --- Core Functions ---
 
     // Function to add a line to the terminal
@@ -130,22 +307,82 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Event Listeners ---
-
-    // Listen for Ctrl+K to open search
+    
+    // F+S key combination handler for stats
+    let fKeyPressed = false;
+    let sKeyPressed = false;
+    let keyPressTimer = null;
+    let keyHoldDuration = 0;
+    const REQUIRED_HOLD_TIME = 2000; // 2 seconds
+    
     window.addEventListener('keydown', (e) => {
+        // Track F and S keys
+        if (e.key.toLowerCase() === 'f') {
+            if (!fKeyPressed) {
+                fKeyPressed = true;
+                keyHoldDuration = 0;
+                if (sKeyPressed) {
+                    startStatsTimer();
+                }
+            }
+        }
+        if (e.key.toLowerCase() === 's') {
+            if (!sKeyPressed) {
+                sKeyPressed = true;
+                keyHoldDuration = 0;
+                if (fKeyPressed) {
+                    startStatsTimer();
+                }
+            }
+        }
+        
+        // Listen for Ctrl+K to open search
         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
             e.preventDefault();
             searchModal.classList.remove('hidden');
             searchInput.focus();
             searchInput.value = '';
         }
-        // Listen for Escape key to close search
+        
+        // Listen for Escape key to close modals
         if (e.key === 'Escape') {
             if (!searchModal.classList.contains('hidden')) {
                 searchModal.classList.add('hidden');
             }
+            hideStats();
         }
     });
+    
+    window.addEventListener('keyup', (e) => {
+        if (e.key.toLowerCase() === 'f') {
+            fKeyPressed = false;
+            stopStatsTimer();
+        }
+        if (e.key.toLowerCase() === 's') {
+            sKeyPressed = false;
+            stopStatsTimer();
+        }
+    });
+    
+    function startStatsTimer() {
+        if (keyPressTimer) return; // Timer already running
+        
+        keyPressTimer = setInterval(() => {
+            keyHoldDuration += 100;
+            if (keyHoldDuration >= REQUIRED_HOLD_TIME && fKeyPressed && sKeyPressed) {
+                showStats();
+                stopStatsTimer();
+            }
+        }, 100);
+    }
+    
+    function stopStatsTimer() {
+        if (keyPressTimer) {
+            clearInterval(keyPressTimer);
+            keyPressTimer = null;
+            keyHoldDuration = 0;
+        }
+    }
 
     // Listen for Enter key in search input
     searchInput.addEventListener('keydown', (e) => {
@@ -155,6 +392,16 @@ document.addEventListener('DOMContentLoaded', () => {
             performSearch(searchInput.value);
         }
     });
+    
+    // Mobile search button handler (CSS controls visibility)
+    const mobileSearchBtn = document.getElementById('mobile-search-btn');
+    if (mobileSearchBtn) {
+        mobileSearchBtn.addEventListener('click', () => {
+            searchModal.classList.remove('hidden');
+            searchInput.focus();
+            searchInput.value = '';
+        });
+    }
 
     // Start the application
     start();
